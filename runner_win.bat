@@ -1,1 +1,1 @@
-docker run -ti --rm martellato/mltoolbox:v0.1 bash
+docker run -ti --rm -v %cd%:/usr/src/project martellato/mltoolbox:v0.1 bash
