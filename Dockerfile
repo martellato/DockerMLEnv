@@ -1,6 +1,7 @@
 #Dockerfile to install and setup common tools
 FROM ubuntu:20.04
-FROM nvidia/cuda:10.1-base
+#FROM nvidia/cuda:10.1-base
+FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
 ###########################
 #Installs local python 3.6.5 from the Packages folder
 COPY Packages /usr/Packages
