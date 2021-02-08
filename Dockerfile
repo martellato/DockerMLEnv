@@ -19,3 +19,4 @@ RUN apt-get install -y git
 RUN pip3 install numpy pandas matplotlib scikit-learn
 RUN pip3 install tensorflow keras
 RUN pip3 install torch
+RUN pip3 install nltk opencv-python
