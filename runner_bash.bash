@@ -1,2 +1,2 @@
 #!/bin/bash
-docker run -ti --rm -v $(pwd):/usr/src/project martellato/mltoolbox:v0.1 .
+docker run -ti --rm -v $(pwd)/project:/usr/project martellato/mltoolbox:v0.2
