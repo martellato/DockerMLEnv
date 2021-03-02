@@ -31,7 +31,6 @@ RUN echo 'export PATH=$JAVA_HOME/bin:$PATH' >> ~/.profile
 
 #Installs Python Libraries
 WORKDIR /.
-#RUN apt-get install -y python3
 RUN apt-get install -y python3-pip
 RUN pip3 install --upgrade pip
 RUN apt-get install -y git
