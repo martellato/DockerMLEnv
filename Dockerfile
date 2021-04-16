@@ -1,20 +1,18 @@
 #Dockerfile to install and setup common tools
-FROM ubuntu:20.04
+FROM archlinux:latest
 #FROM nvidia/cuda:10.1-base
-FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
 SHELL ["/bin/bash", "-c"]
 RUN mkdir /usr/Packages
                            
-#Installs packages
-RUN apt-get update
-RUN apt-get install -y libssl-dev openssl build-essential zlib1g-dev libbz2-dev liblzma-dev wget 
-WORKDIR /usr/Packages
+RUN patched_glibc=glibc-linux4-2.33-4-x86_64.pkg.tar.zst && \
+    curl -LO "https://repo.archlinuxcn.org/x86_64/$patched_glibc" && \
+    bsdtar -C / -xvf "$patched_glibc"
 
-#Installs pypy 7.3.3 - Py 3.6
-RUN wget https://downloads.python.org/pypy/pypy3.6-v7.3.3-linux64.tar.bz2
-RUN bzip2 -dk pypy3.6-v7.3.3-linux64.tar.bz2
-RUN tar xvf pypy3.6-v7.3.3-linux64.tar
-RUN echo 'export PATH=/usr/Packages/pypy3.6-v7.3.3-linux64/bin:$PATH' >> ~/.profile
+#Installs packages
+RUN yes | pacman -Syyu
+#RUN yes | pacman -S libssl-dev openssl build-essential zlib1g-dev libbz2-dev liblzma-dev wget pypy openjdk git
+RUN yes | pacman -S wget pypy jdk-openjdk git
+WORKDIR /usr/Packages
 
 #Installs Apache Spark
 RUN wget https://downloads.apache.org/spark/spark-3.0.2/spark-3.0.2-bin-hadoop3.2.tgz
@@ -22,20 +20,22 @@ RUN tar xzvf spark-3.0.2-bin-hadoop3.2.tgz
 RUN echo 'export PATH=/usr/Packages/spark-3.0.2-bin-hadoop3.2/bin:/usr/Packages/spark-3.0.2-bin-hadoop3.2/python:$PATH' >> ~/.profile
 RUN echo 'export PYSPARK_DRIVER_PYTHON=pypy' >> ~/.profile
 
-#Installs JDK
-#I know JDK can easily be installed using apt-get install default-jdk but I spent too much time making this work and I refuse to change it until v0.3! :D
-RUN wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" https://download.oracle.com/otn-pub/java/jdk/15.0.2%2B7/0d1cfde4252546c6931946de8db48ee2/jdk-15.0.2_linux-x64_bin.tar.gz 
-RUN tar xzvf jdk-15.0.2_linux-x64_bin.tar.gz
-RUN echo 'export JAVA_HOME=/usr/Packages/jdk-15.0.2' >> ~/.profile
-RUN echo 'export PATH=$JAVA_HOME/bin:$PATH' >> ~/.profile
 
 #Installs Python Libraries
 WORKDIR /.
-RUN apt-get install -y python3-pip
-RUN pip3 install --upgrade pip
-RUN apt-get install -y git
-RUN pip3 install numpy pandas matplotlib scikit-learn
-RUN pip3 install tensorflow keras
-RUN pip3 install torch
-RUN pip3 install nltk opencv-python
+#RUN yes | pacman -U https://archive.archlinux.org/packages/p/python/python-3.8.5-2-x86_64.pkg.tar.zst
+#RUN yes | pacman -U https://archive.archlinux.org/packages/t/tensorflow-opt-cuda/tensorflow-opt-cuda-2.2.0rc3-2-x86_64.pkg.tar.zst
+#RUN yes | pacman -U https://archive.archlinux.org/packages/p/python-pip/python-pip-20.0.2-1-any.pkg.tar.zst
+#RUN yes | pacman -U https://archive.archlinux.org/packages/p/python-numpy/python-numpy-1.18.2-1-x86_64.pkg.tar.zst
+#RUN yes | pacman -U https://archive.archlinux.org/packages/p/python-pandas/python-pandas-1.0.2-1-x86_64.pkg.tar.xz
+#RUN yes | pacman -U https://archive.archlinux.org/packages/p/python-matplotlib/python-matplotlib-3.2.1-1-x86_64.pkg.tar.zst
+#RUN yes | pacman -U https://archive.archlinux.org/packages/p/python-scikit-learn/python-scikit-learn-0.22.2.post1-1-x86_64.pkg.tar.xz
+#RUN yes | pacman -U https://archive.archlinux.org/packages/p/python-pytorch-opt-cuda/python-pytorch-opt-cuda-1.4.1-1-x86_64.pkg.tar.zst
+#RUN yes | pacman -U https://archive.archlinux.org/packages/p/python-nltk/python-nltk-3.5-1-any.pkg.tar.zst
+#RUN yes | pacman -U https://archive.archlinux.org/packages/p/python-opencv/python-opencv-4.5.2-2-x86_64.pkg.tar.zst
+RUN yes | pacman -S python
+RUN yes | pacman -S python-numpy python-pandas python-matplotlib python-scikit-learn
+RUN yes | pacman -S python-tensorflow-opt-cuda tensorboard
+RUN yes | pacman -S python-pytorch-opt-cuda
+RUN yes | pacman -S python-nltk python-regex python-opencv
 ENTRYPOINT source ~/.profile && bin/bash
