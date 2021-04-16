@@ -1,1 +1,1 @@
-docker run -ti --rm -v %cd%\project:/usr/project martellato/mltoolbox:v0.2
+docker run -ti --rm --gpus all nvidia/cuda:11.2-base -v %cd%\project:/usr/project martellato/mltoolbox:arch-latest
